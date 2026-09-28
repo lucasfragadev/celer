@@ -1,0 +1,36 @@
+meta {
+  name: Login - Credenciais Inválidas
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "admin@lites.com.br",
+    "senha": "senha_errada"
+  }
+}
+
+tests {
+  test("Retorna status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("Retorna success: false", function() {
+    expect(res.body.success).to.equal(false);
+  });
+
+  test("Não expõe se o e-mail existe ou não", function() {
+    expect(res.body.error).to.equal("E-mail ou senha inválidos.");
+  });
+}

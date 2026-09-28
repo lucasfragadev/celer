@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.DS_Store
+coverage/
+*.log
+
+# Ignorar arquivos locais de IA e docs antigos
+.agents/
+docs/
+chatWithClaude.md
+*.pdf
+*.sql

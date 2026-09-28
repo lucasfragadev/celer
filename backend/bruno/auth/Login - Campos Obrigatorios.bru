@@ -1,0 +1,31 @@
+meta {
+  name: Login - Campos Obrigatórios
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "admin@lites.com.br"
+  }
+}
+
+tests {
+  test("Retorna status 400 quando senha está ausente", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("Retorna success: false", function() {
+    expect(res.body.success).to.equal(false);
+  });
+}

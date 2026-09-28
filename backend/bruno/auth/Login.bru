@@ -1,0 +1,53 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "admin@lites.com.br",
+    "senha": "senha123"
+  }
+}
+
+script:post-response {
+  // Salva o token automaticamente na variável de ambiente para as próximas requisições
+  if (res.status === 200 && res.body.data?.token) {
+    bru.setVar("token", res.body.data.token);
+    console.log("Token salvo com sucesso.");
+  }
+}
+
+tests {
+  test("Retorna status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Retorna success: true", function() {
+    expect(res.body.success).to.equal(true);
+  });
+
+  test("Retorna token JWT", function() {
+    expect(res.body.data.token).to.be.a("string");
+  });
+
+  test("Retorna dados do usuário sem senha_hash", function() {
+    expect(res.body.data.usuario).to.have.property("id");
+    expect(res.body.data.usuario).to.not.have.property("senha_hash");
+  });
+
+  test("Retorna lista de tenants", function() {
+    expect(res.body.data.tenants).to.be.an("array");
+  });
+}

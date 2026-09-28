@@ -1,0 +1,25 @@
+meta {
+  name: Logout
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/auth/logout
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  test("Retorna status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Retorna success: true", function() {
+    expect(res.body.success).to.equal(true);
+  });
+}

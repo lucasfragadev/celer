@@ -1,0 +1,17 @@
+meta {
+  name: Empregados
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/api/auth/empregados
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
