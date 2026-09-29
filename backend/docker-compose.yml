@@ -15,6 +15,7 @@ services:
       # Executa o SQL de fundação automaticamente na primeira vez
       - ./migrations/00_foundation.sql:/docker-entrypoint-initdb.d/00_foundation.sql
       - ./migrations/01_historicos_beneficios.sql:/docker-entrypoint-initdb.d/01_historicos_beneficios.sql
+      - ./migrations/02_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U celer_user -d celer_db"]
       interval: 10s
