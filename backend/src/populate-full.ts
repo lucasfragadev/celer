@@ -174,12 +174,37 @@ async function run() {
     }
 
     console.log('Populando Parametros e Configuracoes Globais...');
-    if (data.param || data.gerVinc) {
+    if (data.param) {
       await client.query(`
-        INSERT INTO parametros (tenant_id, configuracao)
-        VALUES ($1, $2)
-        ON CONFLICT (tenant_id) DO UPDATE SET configuracao = EXCLUDED.configuracao
-      `, [tenantId, { ...data.param, gerVinc: data.gerVinc }]);
+        INSERT INTO parametros (tenant_id, paleta, arredondamento_cent)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (tenant_id) DO UPDATE SET 
+          paleta = EXCLUDED.paleta, 
+          arredondamento_cent = EXCLUDED.arredondamento_cent
+      `, [tenantId, data.param.paleta || 'verde', data.param.tolArred || 3]);
+    }
+
+    console.log('Populando Mapeamento Gerencial...');
+    if (data.gerVinc) {
+      for (const [gN, modoStr] of Object.entries(data.gerVinc)) {
+        if (!modoStr) continue;
+        const ordem = parseInt(gN.replace('G', ''));
+        if (isNaN(ordem)) continue;
+
+        let modo = 'rateio';
+        if (modoStr === 'projeto') modo = 'projeto';
+        else if (modoStr === 'empregado') modo = 'empregado';
+        else if (modoStr === 'rubrica') modo = 'rubrica';
+
+        const planoNome = gN === 'G1' ? 'Projetos' : (gN === 'G2' ? 'Empregados' : (gN === 'G3' ? 'Rubricas' : `Plano ${ordem}`));
+
+        await client.query(`
+          INSERT INTO gerenciais (tenant_id, ordem, nome, modo, ativo)
+          VALUES ($1, $2, $3, $4, $5)
+          ON CONFLICT (tenant_id, ordem) DO UPDATE SET 
+            nome = EXCLUDED.nome, modo = EXCLUDED.modo
+        `, [tenantId, ordem, planoNome, modo, true]);
+      }
     }
 
     await client.query('COMMIT');
