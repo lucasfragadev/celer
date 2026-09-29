@@ -9,6 +9,6 @@ coverage/
 .agents/
 docs/
 chatWithClaude.md
-*.pdf
-*.sql
-vps
+/*.pdf
+/*.sql
+vps/

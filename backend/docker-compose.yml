@@ -13,7 +13,8 @@ services:
     volumes:
       - celer_pgdata:/var/lib/postgresql/data
       # Executa o SQL de fundação automaticamente na primeira vez
-      - ../Celer_Banco_Fundacao_Node_v1.sql:/docker-entrypoint-initdb.d/01_foundation.sql
+      - ./migrations/00_foundation.sql:/docker-entrypoint-initdb.d/00_foundation.sql
+      - ./migrations/01_historicos_beneficios.sql:/docker-entrypoint-initdb.d/01_historicos_beneficios.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U celer_user -d celer_db"]
       interval: 10s
