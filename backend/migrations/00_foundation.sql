@@ -207,6 +207,7 @@ create table empregados (
   filial    text,
   situacao  situacao_emp not null default 'ativo',
   conta_g2  text,
+    rateio_padrao jsonb default '{}'::jsonb,
   unique (tenant_id, matricula)
 );
 
