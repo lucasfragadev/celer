@@ -185,26 +185,30 @@ async function run() {
     }
 
     console.log('Populando Mapeamento Gerencial...');
-    if (data.gerVinc) {
-      for (const [gN, modoStr] of Object.entries(data.gerVinc)) {
-        if (!modoStr) continue;
-        const ordem = parseInt(gN.replace('G', ''));
-        if (isNaN(ordem)) continue;
+    // Precisamos garantir que todos os planos (G1, G2, G3, G4...) existam na tabela pai
+    // antes de inserir as contas filhas. Olhamos tanto para gerVinc quanto para gerenciais.
+    const planos = new Set<string>();
+    if (data.gerVinc) Object.keys(data.gerVinc).forEach(k => planos.add(k));
+    if (data.gerenciais) Object.keys(data.gerenciais).forEach(k => planos.add(k));
 
-        let modo = 'rateio';
-        if (modoStr === 'projeto') modo = 'projeto';
-        else if (modoStr === 'empregado') modo = 'empregado';
-        else if (modoStr === 'rubrica') modo = 'rubrica';
+    for (const gN of planos) {
+      const ordem = parseInt(gN.replace('G', ''));
+      if (isNaN(ordem)) continue;
 
-        const planoNome = gN === 'G1' ? 'Projetos' : (gN === 'G2' ? 'Empregados' : (gN === 'G3' ? 'Rubricas' : `Plano ${ordem}`));
+      const modoStr = (data.gerVinc && data.gerVinc[gN]) ? data.gerVinc[gN] : '';
+      let modo = 'rateio';
+      if (modoStr === 'projeto') modo = 'projeto';
+      else if (modoStr === 'empregado') modo = 'empregado';
+      else if (modoStr === 'rubrica') modo = 'rubrica';
 
-        await client.query(`
-          INSERT INTO gerenciais (tenant_id, ordem, nome, modo, ativo)
-          VALUES ($1, $2, $3, $4, $5)
-          ON CONFLICT (tenant_id, ordem) DO UPDATE SET 
-            nome = EXCLUDED.nome, modo = EXCLUDED.modo
-        `, [tenantId, ordem, planoNome, modo, true]);
-      }
+      const planoNome = gN === 'G1' ? 'Projetos' : (gN === 'G2' ? 'Empregados' : (gN === 'G3' ? 'Custos e Despesas' : `Plano ${ordem}`));
+
+      await client.query(`
+        INSERT INTO gerenciais (tenant_id, ordem, nome, modo, ativo)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (tenant_id, ordem) DO UPDATE SET 
+          nome = EXCLUDED.nome, modo = EXCLUDED.modo
+      `, [tenantId, ordem, planoNome, modo, true]);
     }
 
     console.log('Populando Contas Gerenciais (Itens de G1, G2, etc)...');
