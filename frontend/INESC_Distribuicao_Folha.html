@@ -576,7 +576,7 @@ async function handleCelerLogin(ev) {
   const senha = document.getElementById('celerSenha').value;
 
   try {
-    const res = await fetch('http://localhost:3333/api/auth/login', {
+    const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, senha }),
@@ -619,7 +619,7 @@ async function handleCelerLogin(ev) {
 // CELER API — camada de comunicação com o backend
 // ==========================================
 const celerApi = {
-  _base: 'http://localhost:3333/api',
+  _base: '/api',
 
   _headers() {
     return {
@@ -855,7 +855,7 @@ async function migrateLocalStorageToApi() {
   // Retorna { status, data } para analisar separadamente do JSON
   const _post = async (path, body) => {
     try {
-      const r = await fetch('http://localhost:3333/api' + path, {
+      const r = await fetch('/api' + path, {
         method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'x-tenant-id': window.celerTenantId },
         body: JSON.stringify(body)
