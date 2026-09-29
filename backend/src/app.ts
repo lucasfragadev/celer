@@ -17,8 +17,8 @@ import { AuthError } from './services/auth-service';
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL ?? '/api',
-  credentials: true, // Necessário para enviar/receber cookies
+  origin: true, // Permite qualquer origem (ou 'http://...' específico se preferir)
+  credentials: true,
 }));
 app.use(express.json());
 app.use(cookieParser());

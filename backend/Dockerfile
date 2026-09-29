@@ -1,24 +1,27 @@
 FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /app/backend
 
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm ci
 
-COPY tsconfig.json ./
-COPY src ./src
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
 
 RUN npm run build
 
-# ─── Imagem de produção (enxuta) ──────────────────────────
+# --- Imagem de producao ---
 FROM node:20-alpine AS production
 
-WORKDIR /app
+WORKDIR /app/backend
 
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/backend/dist ./dist
+
+# CRITICO: Copiar o frontend para dentro do container
+COPY frontend /app/frontend
 
 EXPOSE 3333
 

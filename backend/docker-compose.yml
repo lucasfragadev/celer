@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: celer_pass
       POSTGRES_DB: celer_db
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - celer_pgdata:/var/lib/postgresql/data
       # Executa o SQL de fundação automaticamente na primeira vez
@@ -23,8 +23,8 @@ services:
   # ─── API Node.js ──────────────────────────────────────────
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: backend/Dockerfile
     container_name: celer_api
     restart: unless-stopped
     ports:
