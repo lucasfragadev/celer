@@ -142,7 +142,7 @@ async function run() {
             INSERT INTO rateios (tenant_id, competencia_id, matricula, payload)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (tenant_id, competencia_id, matricula) DO UPDATE SET payload = EXCLUDED.payload
-          `, [tenantId, compId, payload]);
+          `, [tenantId, compId, mat, payload]);
         }
       }
     }
@@ -168,7 +168,7 @@ async function run() {
             INSERT INTO beneficios (tenant_id, competencia_id, matricula, payload)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (tenant_id, competencia_id, matricula) DO UPDATE SET payload = EXCLUDED.payload
-          `, [tenantId, compId, payload]);
+          `, [tenantId, compId, mat, payload]);
         }
       }
     }
