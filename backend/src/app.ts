@@ -28,6 +28,11 @@ const frontendPath = path.resolve(process.cwd(), '../frontend');
 console.log('Servindo frontend de:', frontendPath);
 app.use(express.static(frontendPath));
 
+// Garante que a rota raiz sirva o arquivo HTML
+app.get('/', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'INESC_Distribuicao_Folha.html'));
+});
+
 // ─── Rotas ────────────────────────────────────────────────
 
 app.get('/health', (_req, res) => {
