@@ -50,6 +50,11 @@ export class OperacoesService {
     return await this.repository.upsertRateio(tenantId, compId, matricula, payload);
   }
 
+  // --- BENEFICIOS MENSAIS ---
+  async getBeneficios(tenantId: string, compId: string): Promise<any[]> {
+    return await this.repository.getBeneficios(tenantId, compId);
+  }
+
   // --- PAGAMENTOS ---
   async getPagamentos(tenantId: string, compId: string): Promise<Pagamento[]> {
     return await this.repository.getPagamentos(tenantId, compId);

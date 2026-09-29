@@ -139,7 +139,25 @@ create table parametros (
   atualizado_em         timestamptz not null default now()
 );
 
-create table gerenciais (
+create table contas_gerenciais (
+    id              uuid primary key default gen_random_uuid(),
+    tenant_id       uuid not null references tenants(id) on delete cascade,
+    gerencial_ordem int not null,
+    codigo          text not null,
+    nome            text not null,
+    tipo            text,
+    classificacao   text,
+    unique (tenant_id, gerencial_ordem, codigo),
+    foreign key (tenant_id, gerencial_ordem) references gerenciais(tenant_id, ordem) on delete cascade
+  );
+
+  alter table contas_gerenciais enable row level security;
+  create policy cg_sel on contas_gerenciais for select using (celer_is_member(tenant_id));
+  create policy cg_ins on contas_gerenciais for insert with check (celer_has_perm(tenant_id,'editar_cadastro'));
+  create policy cg_upd on contas_gerenciais for update using (celer_has_perm(tenant_id,'editar_cadastro'));
+  create policy cg_del on contas_gerenciais for delete using (celer_has_perm(tenant_id,'editar_cadastro'));
+  
+  create table gerenciais (
   id        uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references tenants(id) on delete cascade,
   ordem     int  not null check (ordem between 1 and 6),

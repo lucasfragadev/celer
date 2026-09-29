@@ -207,6 +207,39 @@ async function run() {
       }
     }
 
+    console.log('Populando Contas Gerenciais (Itens de G1, G2, etc)...');
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS contas_gerenciais (
+        id              uuid primary key default gen_random_uuid(),
+        tenant_id       uuid not null references tenants(id) on delete cascade,
+        gerencial_ordem int not null,
+        codigo          text not null,
+        nome            text not null,
+        tipo            text,
+        classificacao   text,
+        unique (tenant_id, gerencial_ordem, codigo),
+        foreign key (tenant_id, gerencial_ordem) references gerenciais(tenant_id, ordem) on delete cascade
+      )
+    `);
+    if (data.gerenciais) {
+      for (const [gKey, contasObj] of Object.entries(data.gerenciais)) {
+        const ordem = parseInt(gKey.replace('G', ''));
+        if (isNaN(ordem)) continue;
+        
+        for (const [codigo, cObj] of Object.entries(contasObj as any)) {
+          const nome = (cObj as any).nome || 'Sem Nome';
+          const tipo = (cObj as any).tipo || 'A';
+          const classificacao = (cObj as any).classif || '';
+          await client.query(`
+            INSERT INTO contas_gerenciais (tenant_id, gerencial_ordem, codigo, nome, tipo, classificacao)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT (tenant_id, gerencial_ordem, codigo) DO UPDATE SET
+              nome = EXCLUDED.nome, tipo = EXCLUDED.tipo, classificacao = EXCLUDED.classificacao
+          `, [tenantId, ordem, codigo, nome, tipo, classificacao]);
+        }
+      }
+    }
+
     await client.query('COMMIT');
     console.log('População TOTAL concluída com sucesso!');
   } catch (err: any) {

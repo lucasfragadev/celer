@@ -17,6 +17,9 @@ operacoesRouter.get('/rateios', OperacoesController.listRateios);
 operacoesRouter.get('/rateios/:matricula', OperacoesController.getRateioMatricula);
 operacoesRouter.put('/rateios/:matricula', OperacoesController.saveRateio);
 
+// --- BENEFICIOS MENSAIS ---
+operacoesRouter.get('/beneficios', OperacoesController.getBeneficios);
+
 // --- PAGAMENTOS ---
 operacoesRouter.get('/pagamentos', OperacoesController.listPagamentos);
 operacoesRouter.post('/pagamentos', OperacoesController.addPagamento);

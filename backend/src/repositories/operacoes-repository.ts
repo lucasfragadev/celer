@@ -54,6 +54,15 @@ export class OperacoesRepository {
     return res.rows[0];
   }
 
+  // --- BENEFICIOS MENSAIS ---
+  async getBeneficios(tenantId: string, competenciaId: string): Promise<any[]> {
+    const res = await this.client.query(
+      'SELECT * FROM beneficios WHERE tenant_id = $1 AND competencia_id = $2',
+      [tenantId, competenciaId]
+    );
+    return res.rows;
+  }
+
   // --- PAGAMENTOS ---
   async getPagamentos(tenantId: string, competenciaId: string): Promise<Pagamento[]> {
     const res = await this.client.query<Pagamento>(

@@ -57,6 +57,17 @@ export class OperacoesController {
     res.status(200).json({ success: true, data: salvo } as ApiResponse<Rateio>);
   }
 
+  // --- BENEFICIOS MENSAIS ---
+  static async getBeneficios(req: Request, res: Response): Promise<void> {
+    const authReq = req as AuthenticatedRequest;
+    const service = new OperacoesService(authReq.dbClient);
+    const tenantId = req.headers['x-tenant-id'] as string;
+    if (!tenantId) { res.status(400).json({ success: false, error: 'X-Tenant-Id obrigatA3rio' }); return; }
+
+    const beneficios = await service.getBeneficios(tenantId, req.params.competenciaId);
+    res.status(200).json({ success: true, data: beneficios } as ApiResponse<any[]>);
+  }
+
   // --- PAGAMENTOS ---
   static async listPagamentos(req: Request, res: Response): Promise<void> {
     const authReq = req as AuthenticatedRequest;
