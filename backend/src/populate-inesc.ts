@@ -35,18 +35,29 @@ async function run() {
     console.log('Populando Empregados...');
     if (seed.empregados) {
       for (const [mat, emp] of Object.entries(seed.empregados)) {
+        
+        let situacao = 'ativo';
+        const rawSit = (emp as any).situacao;
+        if (rawSit == '1') situacao = 'ativo';
+        else if (rawSit == '2') situacao = 'afastado';
+        else if (rawSit == '3') situacao = 'desligado';
+        else if (typeof rawSit === 'string' && ['ativo', 'afastado', 'desligado'].includes(rawSit.toLowerCase())) {
+          situacao = rawSit.toLowerCase();
+        }
+
         await client.query(`
           INSERT INTO empregados (tenant_id, matricula, nome, cargo, situacao, conta_g2)
           VALUES ($1, $2, $3, $4, $5, $6)
           ON CONFLICT (tenant_id, matricula) DO UPDATE SET
             nome = EXCLUDED.nome,
-            cargo = EXCLUDED.cargo
+            cargo = EXCLUDED.cargo,
+            situacao = EXCLUDED.situacao
         `, [
           tenantId,
           mat,
           (emp as any).nome || 'Sem Nome',
           (emp as any).cargo || '',
-          (emp as any).situacao || 'Ativo',
+          situacao,
           (emp as any).contaG2 || ''
         ]);
       }
