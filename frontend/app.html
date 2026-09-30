@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>INESC — Distribuição da Folha por Funcionário e Rubrica</title>
+<title>Celer SaaS — Distribuição da Folha por Funcionário e Rubrica</title>
 <style>
 :root{
   --ink:#18202B; --muted:#5C6675; --paper:#F5F7F9; --surface:#FFFFFF; --line:#E4E8ED;
@@ -774,6 +774,14 @@ async function syncFromApi() {
       console.log('[sync] Cadastro Benefícios:', benCadArr.length);
     }
 
+    
+    if (window.celerTenants && window.celerTenants.length > 0) {
+      const tNome = window.celerTenants[0].nome;
+      document.title = 'Celer | ' + tNome;
+      const sb1 = document.querySelector('.sb1');
+      if (sb1) sb1.textContent = tNome;
+    }
+
     console.log('[sync] Sincronização completa!');
   } catch(e) {
     console.error('[sync] Erro durante sincronização:', e);
@@ -1056,7 +1064,7 @@ function baseModal(txt,nome){
 }
 function baixarBaseSeguro(){
   try{
-    const txt=document.getElementById('baseTxt').value; const nome=window.__baseNomeSug||'INESC_base_2026.json';
+    const txt=document.getElementById('baseTxt').value; const nome=window.__baseNomeSug||'Celer_base_2026.json';
     const blob=new Blob([txt],{type:'application/octet-stream'}); const url=URL.createObjectURL(blob);
     const a=document.createElement('a'); a.href=url; a.download=nome; a.rel='noopener'; document.body.appendChild(a); a.click();
     setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},150);
