@@ -593,7 +593,13 @@ async function handleCelerLogin(ev) {
       window.celerUser = data.data.usuario;
       window.celerTenants = data.data.tenants;
       // Usa o primeiro tenant disponível. Futuramente: permitir seleção quando houver mais de um.
-      window.celerTenantId = data.data.tenants[0] && data.data.tenants[0].id;
+      window.celerTenants = data.data.tenants;
+      const impTenant = localStorage.getItem('celerImpersonateTenant');
+      if (impTenant && data.data.usuario.admin_global) {
+        window.celerTenantId = impTenant;
+      } else {
+        window.celerTenantId = data.data.tenants[0] && data.data.tenants[0].id;
+      }
 
       console.log('Bem-vindo(a),', window.celerUser.nome, '| Tenant:', window.celerTenantId);
 

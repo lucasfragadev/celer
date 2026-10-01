@@ -192,7 +192,7 @@ async function loadTenants() {
 function renderTenants(tenants) {
   const tbody = $('tenantRows');
   if (tenants.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888">Nenhuma empresa cadastrada.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888">Nenhuma empresa cadastrada.</td></tr>';
     return;
   }
   
@@ -203,8 +203,14 @@ function renderTenants(tenants) {
       <td>${t.cnpj || '-'}</td>
       <td><span class="badge">${t.ativo ? 'Ativo' : 'Inativo'}</span></td>
       <td style="color:var(--muted)">${new Date(t.criado_em).toLocaleDateString('pt-BR')}</td>
+      <td><button class="ghost" style="padding:4px 8px;font-size:12px" onclick="impersonate('${t.id}')">Acessar</button></td>
     </tr>
   `).join('');
+}
+
+function impersonate(tenantId) {
+  localStorage.setItem('celerImpersonateTenant', tenantId);
+  window.location.href = '/'; // Redireciona para o app.html (raiz)
 }
 
 function openTenantModal() {
@@ -218,11 +224,35 @@ function closeTenantModal() {
   $('tenantModalBg').classList.remove('show');
 }
 
+function formatCnpj(v) {
+  v=v.replace(/\D/g,"");
+  if(v.length>14) v=v.slice(0,14);
+  v=v.replace(/^(\d{2})(\d)/,"$1.$2");
+  v=v.replace(/^(\d{2})\.(\d{3})(\d)/,"$1.$2.$3");
+  v=v.replace(/\.(\d{3})(\d)/,".$1/$2");
+  v=v.replace(/(\d{4})(\d)/,"$1-$2");
+  return v;
+}
+
+// Attach listener if you want real-time mask, or just validate.
+document.getElementById('tCnpj').addEventListener('input', function(e) {
+  e.target.value = formatCnpj(e.target.value);
+});
+
 async function saveTenant() {
   const btn = $('btnSave');
+  const cnpjRaw = $('tCnpj').value.trim();
+  const cnpjClean = cnpjRaw.replace(/\D/g, '');
+  
+  if (cnpjClean && cnpjClean.length !== 14 && cnpjClean !== '00000000000000') {
+    $('tError').innerText = "CNPJ inválido. Digite 14 números.";
+    $('tError').style.display = 'block';
+    return;
+  }
+
   const payload = {
     nome: $('tNome').value.trim(),
-    cnpj: $('tCnpj').value.trim(),
+    cnpj: cnpjClean ? cnpjRaw : '',
     nomeUsuario: $('tUserNome').value.trim(),
     email: $('tUserEmail').value.trim(),
     senha: $('tUserSenha').value
