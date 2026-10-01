@@ -564,6 +564,23 @@ const FOLHA_DEMO="2026/01;1;PROVENTO;1;HORAS NORMAIS;3888,48\n2026/01;1;PROVENTO
 // ==========================================
 // AUTENTICAÇÃO CELER API
 // ==========================================
+async function restoreCelerSession() {
+  const session = await celerApi.get('/auth/session');
+  if (session && session.usuario) {
+    document.getElementById('celerLoginOverlay').style.display = 'none';
+    window.celerUser = session.usuario;
+    window.celerTenants = session.tenants;
+    const impTenant = localStorage.getItem('celerImpersonateTenant');
+    if (impTenant && session.usuario.admin_global) {
+      window.celerTenantId = impTenant;
+    } else {
+      window.celerTenantId = session.tenants[0] && session.tenants[0].id;
+    }
+    console.log('Sessão restaurada:', window.celerUser.nome, '| Tenant:', window.celerTenantId);
+  }
+}
+restoreCelerSession();
+
 async function handleCelerLogin(ev) {
   ev.preventDefault();
   const btn = document.getElementById('celerLoginBtn');

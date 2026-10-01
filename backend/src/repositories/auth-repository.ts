@@ -22,6 +22,14 @@ export class AuthRepository {
     return result.rows[0] ?? null;
   }
 
+  async findUserById(id: string): Promise<Usuario | null> {
+    const result = await this.client.query<Usuario>(
+      'SELECT id, email, senha_hash, nome, admin_global, criado_em FROM usuarios WHERE id = $1',
+      [id]
+    );
+    return result.rows[0] ?? null;
+  }
+
   /**
    * Retorna os tenants (clientes) aos quais o usuário tem acesso.
    * Admin global vê todos. Demais usuários veem apenas os seus.

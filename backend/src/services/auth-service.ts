@@ -77,5 +77,25 @@ export class AuthService {
     };
 
     return { token, usuario: usuarioPublico, tenants };
+  async session(userId: string): Promise<Omit<LoginOutput, 'token'>> {
+    const usuario = await this.repository.findUserById(userId);
+    if (!usuario) {
+      throw new AuthError(401, 'Sessão inválida ou expirada.');
+    }
+
+    const tenants = await this.repository.findTenantsByUserId(
+      usuario.id,
+      usuario.admin_global
+    );
+
+    const usuarioPublico: UsuarioPublico = {
+      id: usuario.id,
+      email: usuario.email,
+      nome: usuario.nome,
+      admin_global: usuario.admin_global,
+      criado_em: usuario.criado_em,
+    };
+
+    return { usuario: usuarioPublico, tenants };
   }
 }

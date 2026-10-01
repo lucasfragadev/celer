@@ -58,5 +58,14 @@ export class AuthController {
     };
 
     res.status(200).json(response);
+  static async session(req: Request, res: Response): Promise<void> {
+    const authRequest = req as AuthenticatedRequest;
+    if (!authRequest.userId) {
+      res.status(401).json({ success: false, error: 'Não autorizado' });
+      return;
+    }
+    const service = new AuthService(authRequest.dbClient);
+    const result = await service.session(authRequest.userId);
+    res.status(200).json({ success: true, data: result });
   }
 }
