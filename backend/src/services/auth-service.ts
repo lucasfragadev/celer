@@ -77,6 +77,8 @@ export class AuthService {
     };
 
     return { token, usuario: usuarioPublico, tenants };
+  }
+
   async session(userId: string): Promise<Omit<LoginOutput, 'token'>> {
     const usuario = await this.repository.findUserById(userId);
     if (!usuario) {
