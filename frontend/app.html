@@ -579,7 +579,6 @@ async function restoreCelerSession() {
     console.log('Sessão restaurada:', window.celerUser.nome, '| Tenant:', window.celerTenantId);
   }
 }
-restoreCelerSession();
 
 async function handleCelerLogin(ev) {
   ev.preventDefault();
@@ -3143,7 +3142,7 @@ function openCSV(){
 }
 function copyEl(id){const t=$(id);t.select();try{document.execCommand('copy');toast('Copiado');}catch(e){navigator.clipboard&&navigator.clipboard.writeText(t.value);toast('Copiado');}}
 
-init();
+restoreCelerSession().finally(() => init());
 </script>
 </body>
 </html>
