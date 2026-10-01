@@ -12,8 +12,8 @@ import { parametroRouter } from './routes/parametro-routes';
 import { competenciaRouter } from './routes/competencia-routes';
 import { historicoRouter } from './routes/historico-routes';
 import { beneficioRouter } from './routes/beneficio-routes';
+import { adminRoutes } from './routes/admin-routes';
 import { AuthError } from './services/auth-service';
-
 const app = express();
 
 app.use(cors({
@@ -48,6 +48,7 @@ app.use('/api/parametros', parametroRouter);
 app.use('/api/competencias', competenciaRouter);
 app.use('/api/historicos', historicoRouter);
 app.use('/api/beneficios', beneficioRouter);
+app.use('/api/admin', adminRoutes);
 
 // ─── Tratamento Global de Erros ───────────────────────────
 

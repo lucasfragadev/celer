@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export interface AuthenticatedRequest extends Request {
   userId?: string;
+  adminGlobal?: boolean;
   dbClient?: any;
 }
 
@@ -18,10 +19,18 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    const { sub } = decoded as { sub: string };
+    const { sub, adminGlobal } = decoded as { sub: string, adminGlobal?: boolean };
     req.userId = sub;
+    req.adminGlobal = adminGlobal;
     next();
   } catch (err) {
     return res.status(401).json({ success: false, error: 'Token invalid' });
   }
+}
+
+export function requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  if (!req.adminGlobal) {
+    return res.status(403).json({ success: false, error: 'Acesso restrito ao Super-Admin' });
+  }
+  next();
 }

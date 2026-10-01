@@ -63,7 +63,7 @@ export class AuthService {
     }
 
     const token = jwt.sign(
-      { sub: usuario.id, email: usuario.email },
+      { sub: usuario.id, email: usuario.email, adminGlobal: usuario.admin_global },
       jwtSecret,
       { expiresIn: jwtExpiresIn } as jwt.SignOptions
     );
